@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwapQL", "SwapQL.csproj", "{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared_DB_Functions", "..\Shared_DB_Functions\Shared_DB_Functions.csproj", "{1B0A8EB4-FA85-42BD-8912-384BD30685D4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MYSQL_DB_Functions", "..\MYSQL_DB_Functions\MYSQL_DB_Functions.csproj", "{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Debug|x86.Build.0 = Debug|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Release|x64.Build.0 = Release|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{35B1DCA8-B5E4-4D43-9DF1-6706FDE582DB}.Release|x86.Build.0 = Release|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Release|x64.Build.0 = Release|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B0A8EB4-FA85-42BD-8912-384BD30685D4}.Release|x86.Build.0 = Release|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Debug|x64.Build.0 = Debug|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Release|x64.ActiveCfg = Release|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Release|x64.Build.0 = Release|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC095D53-3C06-4272-8B96-3B7AC6A9AF42}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {742067CF-2CAB-4233-B7D0-AFDB48B8AA98}
+	EndGlobalSection
+EndGlobal
