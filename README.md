@@ -1,2 +1,2 @@
 # SwapQL
-A tool for converting one relational databasesystem to another relational databasesystem.
+A tool for transferring databases from one relational databasesystem to another relational databasesystem.
