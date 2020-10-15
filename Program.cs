@@ -13,7 +13,7 @@ namespace SwapQL
             InvalidConfig
         }
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             Console.Title = "SwapQL";
 
@@ -21,7 +21,7 @@ namespace SwapQL
             Console.WriteLine("Reading configuration...");
             try
             {
-                await Configuration.ReadConfig();
+                Configuration.ReadConfig();
             }
             catch (Exception e)
             {
@@ -30,7 +30,6 @@ namespace SwapQL
                 Environment.Exit((int)ExitCodes.InvalidConfig);
             }
             Console.WriteLine("Configuration read...");
-            Console.WriteLine($"Using options:\n\thost = {Configuration.Host}:{Configuration.Port}\n\tuser = {Configuration.User}\n\tpassword = {Configuration.Password}");
             #endregion
 
             // TODO: connenct to database
