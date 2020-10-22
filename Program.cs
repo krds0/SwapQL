@@ -40,10 +40,10 @@ namespace SwapQL
             */
 
             // TODO: connenct to database
-            MySqlClientFactory test = (MySqlClientFactory)SharedFunctions.GetProvFact(SharedFunctions.DatabaseKind.Mysql);
-            Console.WriteLine("Created Mysql Provider Factory");
+            DbProviderFactory test = SharedFunctions.GetProvFact(SharedFunctions.DatabaseKind.Mysql);
+            Console.WriteLine("Created Provider Factory");
 
-            Console.WriteLine(MYSQLReader.ReadData("Select * from test_table;"));
+            Console.WriteLine(MYSQLReader.ReadMYSQLData("Select * from test_table;"));
             Console.WriteLine("Successfully read from MySQL Database.");
 
             Console.Read();
