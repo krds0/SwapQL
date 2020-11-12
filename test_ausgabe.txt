@@ -1,0 +1,122 @@
+MetaDataCollections
++----------------------+----------------------+----------------------+
+| CollectionName       | NumberOfRestrictions | NumberOfIdentifierPa |
++----------------------+----------------------+----------------------+
+| MetaDataCollections  | 0                    | 0                    |
+| DataSourceInformatio | 0                    | 0                    |
+| DataTypes            | 0                    | 0                    |
+| Restrictions         | 0                    | 0                    |
+| ReservedWords        | 0                    | 0                    |
+| Databases            | 1                    | 1                    |
+| Tables               | 4                    | 2                    |
+| Columns              | 4                    | 4                    |
+| Users                | 1                    | 1                    |
+| Foreign Keys         | 4                    | 3                    |
+| IndexColumns         | 5                    | 4                    |
+| Indexes              | 4                    | 3                    |
+| Foreign Key Columns  | 4                    | 3                    |
+| UDF                  | 1                    | 1                    |
+| Views                | 2                    | 3                    |
+| ViewColumns          | 3                    | 4                    |
+| Procedure Parameters | 5                    | 1                    |
+| Procedures           | 4                    | 3                    |
+| Triggers             | 2                    | 4                    |
++----------------------+----------------------+----------------------+
+Restrictions
++----------------------+----------------------+----------------------+----------------------+
+| CollectionName       | RestrictionName      | RestrictionDefault   | RestrictionNumber    |
++----------------------+----------------------+----------------------+----------------------+
+| Users                | Name                 |                      | 0                    |
+| Databases            | Name                 |                      | 0                    |
+| Tables               | Database             |                      | 0                    |
+| Tables               | Schema               |                      | 1                    |
+| Tables               | Table                |                      | 2                    |
+| Tables               | TableType            |                      | 3                    |
+| Columns              | Database             |                      | 0                    |
+| Columns              | Schema               |                      | 1                    |
+| Columns              | Table                |                      | 2                    |
+| Columns              | Column               |                      | 3                    |
+| Indexes              | Database             |                      | 0                    |
+| Indexes              | Schema               |                      | 1                    |
+| Indexes              | Table                |                      | 2                    |
+| Indexes              | Name                 |                      | 3                    |
+| IndexColumns         | Database             |                      | 0                    |
+| IndexColumns         | Schema               |                      | 1                    |
+| IndexColumns         | Table                |                      | 2                    |
+| IndexColumns         | ConstraintName       |                      | 3                    |
+| IndexColumns         | Column               |                      | 4                    |
+| Foreign Keys         | Database             |                      | 0                    |
+| Foreign Keys         | Schema               |                      | 1                    |
+| Foreign Keys         | Table                |                      | 2                    |
+| Foreign Keys         | Constraint Name      |                      | 3                    |
+| Foreign Key Columns  | Catalog              |                      | 0                    |
+| Foreign Key Columns  | Schema               |                      | 1                    |
+| Foreign Key Columns  | Table                |                      | 2                    |
+| Foreign Key Columns  | Constraint Name      |                      | 3                    |
+| UDF                  | Name                 |                      | 0                    |
+| Procedure Parameters | Database             |                      | 0                    |
+| Procedure Parameters | Schema               |                      | 1                    |
+| Procedure Parameters | Name                 |                      | 2                    |
+| Procedure Parameters | Type                 |                      | 3                    |
+| Procedure Parameters | Parameter            |                      | 4                    |
+| Procedures           | Database             |                      | 0                    |
+| Procedures           | Schema               |                      | 1                    |
+| Procedures           | Name                 |                      | 2                    |
+| Procedures           | Type                 |                      | 3                    |
+| Views                | Database             |                      | 0                    |
+| Views                | Schema               |                      | 1                    |
+| Views                | Table                |                      | 2                    |
+| ViewColumns          | Database             |                      | 0                    |
+| ViewColumns          | Schema               |                      | 1                    |
+| ViewColumns          | Table                |                      | 2                    |
+| ViewColumns          | Column               |                      | 3                    |
+| Triggers             | Database             |                      | 0                    |
+| Triggers             | Schema               |                      | 1                    |
+| Triggers             | Name                 |                      | 2                    |
+| Triggers             | EventObjectTable     |                      | 3                    |
++----------------------+----------------------+----------------------+----------------------+
+Restrictions
++----------------------+----------------------+----------------------+----------------------+
+| CollectionName       | RestrictionName      | RestrictionDefault   | RestrictionNumber    |
++----------------------+----------------------+----------------------+----------------------+
+| Tables               | Database             |                      | 0                    |
+| Tables               | Schema               |                      | 1                    |
+| Tables               | Table                |                      | 2                    |
+| Tables               | TableType            |                      | 3                    |
++----------------------+----------------------+----------------------+----------------------+
+Databases
++----------------------+----------------------+----------------------+----------------------+----------------------+
+| CATALOG_NAME         | database_name        | DEFAULT_CHARACTER_SE | DEFAULT_COLLATION_NA | SQL_PATH             |
++----------------------+----------------------+----------------------+----------------------+----------------------+
+| def                  | information_schema   | utf8                 | utf8_general_ci      |                      |
+| def                  | bikestores           | latin1               | latin1_german1_ci    |                      |
+| def                  | mysql                | utf8mb4              | utf8mb4_general_ci   |                      |
+| def                  | performance_schema   | utf8                 | utf8_general_ci      |                      |
+| def                  | phpmyadmin           | utf8                 | utf8_bin             |                      |
+| def                  | sourcetestdb         | utf8mb4              | utf8mb4_general_ci   |                      |
++----------------------+----------------------+----------------------+----------------------+----------------------+
+Tables
++----------------------+----------------------+----------------------+
+| TABLE_SCHEMA         | TABLE_NAME           | TABLE_ROWS           |
++----------------------+----------------------+----------------------+
+| bikestores           | brands               | 9                    |
+| bikestores           | categories           | 7                    |
+| bikestores           | customers            | 1446                 |
+| bikestores           | orders               | 1615                 |
+| bikestores           | order_items          | 4722                 |
+| bikestores           | products             | 321                  |
+| bikestores           | staffs               | 10                   |
+| bikestores           | stocks               | 939                  |
+| bikestores           | stores               | 3                    |
++----------------------+----------------------+----------------------+
+Columns
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
+| COLUMN_NAME     | ORDINAL_POSITIO | IS_NULLABLE     | DATA_TYPE       | COLUMN_KEY      | EXTRA           |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
+| product_id      | 1               | NO              | int             | PRI             | auto_increment  |
+| product_name    | 2               | NO              | varchar         |                 |                 |
+| brand_id        | 3               | NO              | int             | MUL             |                 |
+| category_id     | 4               | NO              | int             | MUL             |                 |
+| model_year      | 5               | NO              | smallint        |                 |                 |
+| list_price      | 6               | NO              | decimal         |                 |                 |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+

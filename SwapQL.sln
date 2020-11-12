@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{8E4C4274-E157-4006-8BD9-88443A7ABC92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwapQL", "SwapQL\SwapQL.csproj", "{8E4C4274-E157-4006-8BD9-88443A7ABC92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared_Functions_Lib", "Shared_Functions_Lib\Shared_Functions_Lib.csproj", "{BE99D314-19F4-4399-AFED-0C672EE796E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySQL_Functions_Lib", "MySQL_Functions_Lib\MySQL_Functions_Lib.csproj", "{B1F93A17-5791-4F32-A4CD-B4FFF4D8A8F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQL_Functions_Lib", "MySQL_Functions_Lib\MySQL_Functions_Lib.csproj", "{B1F93A17-5791-4F32-A4CD-B4FFF4D8A8F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQL_Functions_Lib", "PostgreSQL_Functions_Lib\PostgreSQL_Functions_Lib.csproj", "{BF5BBCDD-B9F3-40B5-BADB-8C9B2CD198C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostgreSQL_Functions_Lib", "PostgreSQL_Functions_Lib\PostgreSQL_Functions_Lib.csproj", "{BF5BBCDD-B9F3-40B5-BADB-8C9B2CD198C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwapQLib", "SwapQLib\SwapQLib.csproj", "{E30771CA-3B0E-496E-80A8-D07B7D0FBCC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		{8E4C4274-E157-4006-8BD9-88443A7ABC92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E4C4274-E157-4006-8BD9-88443A7ABC92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E4C4274-E157-4006-8BD9-88443A7ABC92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE99D314-19F4-4399-AFED-0C672EE796E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE99D314-19F4-4399-AFED-0C672EE796E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE99D314-19F4-4399-AFED-0C672EE796E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE99D314-19F4-4399-AFED-0C672EE796E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B1F93A17-5791-4F32-A4CD-B4FFF4D8A8F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1F93A17-5791-4F32-A4CD-B4FFF4D8A8F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1F93A17-5791-4F32-A4CD-B4FFF4D8A8F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{BF5BBCDD-B9F3-40B5-BADB-8C9B2CD198C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF5BBCDD-B9F3-40B5-BADB-8C9B2CD198C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF5BBCDD-B9F3-40B5-BADB-8C9B2CD198C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E30771CA-3B0E-496E-80A8-D07B7D0FBCC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E30771CA-3B0E-496E-80A8-D07B7D0FBCC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E30771CA-3B0E-496E-80A8-D07B7D0FBCC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E30771CA-3B0E-496E-80A8-D07B7D0FBCC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared_Functions_Lib\Shared_Functions_Lib.csproj" />
+    <ProjectReference Include="..\SwapQLib\SwapQLib.csproj" />
   </ItemGroup>
 
 </Project>

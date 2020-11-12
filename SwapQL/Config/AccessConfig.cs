@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.IO;
+
 using Salaros.Configuration;
 
 namespace SwapQL.Config
 {
-    static class Configuration
+    internal static class AccessConfig
     {
-        public static DbInfo Target { get; private set; }
-        public static DbInfo Source { get; private set; }
-
+        public static AccessInfo Target { get; private set; }
+        public static AccessInfo Source { get; private set; }
 
         ///<summary>
         ///Reads the configuration from "%USERPROFILE%/.SwapQL.conf" and parses its content.
@@ -20,15 +20,28 @@ namespace SwapQL.Config
 
             if (!File.Exists($"{path}/.SwapQL.conf"))
                 throw new FileNotFoundException("Config file not found!", $"{path}/.SwapQL.conf");
-            
+
             var parser = new ConfigParser($"{path}/.SwapQL.conf",
                                           new ConfigParserSettings()
                                           {
-                                              MultiLineValues = MultiLineValues.Simple | MultiLineValues.AllowEmptyTopSection 
+                                              MultiLineValues = MultiLineValues.Simple | MultiLineValues.AllowEmptyTopSection
                                           });
-            
-            Target = new DbInfo(parser["target"]);
-            Source = new DbInfo(parser["source"]);
+
+            Target = new AccessInfo(parser["target"]);
+            Source = new AccessInfo(parser["source"]);
+
+            PrintConfig(parser);
+        }
+
+        private static void PrintConfig(ConfigParser config)
+        {
+            foreach (var section in config.Sections)
+            {
+                foreach (var setting in config[section.SectionName].Lines)
+                {
+                    Console.WriteLine(setting);
+                }
+            }
         }
     }
 }

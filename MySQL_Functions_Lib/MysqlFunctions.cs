@@ -1,25 +1,34 @@
 ﻿using MySql.Data.MySqlClient;
 using Npgsql;
+
+using SwapQLib;
+
 using System;
 using System.Data.Common;
-using Shared_Functions_Lib;
 
 namespace MySQL_Functions_Lib
 {
-    public class MysqlFunctions
+    public class MysqlFunctions : ISwapQL
     {
-        private static string createConnectionString() //IMPLEMENT dynamic connection string!
-        {
-            string connectionString = $"SERVER =localhost; DATABASE =sourcetestdb; UID =root; ";
-            return connectionString;
-        }
+        //private static string createConnectionString() //IMPLEMENT dynamic connection string!
+        //{
+        //    string connectionString = $"SERVER =localhost; DATABASE =sourcetestdb; UID =root; ";
+        //    return connectionString;
+        //}
 
 
-        public static string ReadMYSQLData(string query)
+        //public static string ReadMYSQLData(string query)
+        //{
+        //    string conStr = createConnectionString();
+        //    //MySqlConnection conn = (MySqlConnection)SharedFunctions.createConnection(conStr);
+        //    //return SharedFunctions.ReadData(query, conn);
+        //    return null;
+        //}
+        public override DbProviderFactory database => MySqlClientFactory.Instance;
+
+        public MysqlFunctions()
         {
-            string conStr = createConnectionString();
-            MySqlConnection conn = (MySqlConnection)SharedFunctions.createConnection(conStr);
-            return SharedFunctions.ReadData(query, conn);
+            //Instace.Add("mysql", this);
         }
     }
 }
