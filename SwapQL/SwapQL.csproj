@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MySQL_Functions_Lib\MySQL_Functions_Lib.csproj" />
-    <ProjectReference Include="..\PostgreSQL_Functions_Lib\PostgreSQL_Functions_Lib.csproj" />
+    <ProjectReference Include="..\AddQL\AddQL.csproj" />
     <ProjectReference Include="..\SwapQLib\SwapQLib.csproj" />
   </ItemGroup>
 

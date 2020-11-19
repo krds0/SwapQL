@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using MySQL_Functions_Lib;
-
-using PostgreSQL_Functions_Lib;
+using AddQL;
 
 using SwapQL.Config;
-
 using SwapQLib;
 
 namespace SwapQL
@@ -45,12 +42,12 @@ namespace SwapQL
 
         private static void ReadMetaData()
         {
-            throw new NotImplementedException();
+            PanicAndExit("everything works yay", ExitCode.InvalidConfig);
         }
 
         private static void Connect2Database()
         {
-            Console.WriteLine("Connectiong to database...");
+            Console.WriteLine("Connecting to database...");
 
             // Source database connection
             try
