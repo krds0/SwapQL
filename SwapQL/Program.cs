@@ -37,10 +37,16 @@ namespace SwapQL
 
             Connect2Database();
 
-            Console.WriteLine( source.CreateInserts("test_table"));
-
             ReadMetaData();
 
+            List<string> insertStatements = source.CreateInserts("test_table");
+
+            foreach (var item in insertStatements)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.ReadLine();
         }
 
         private static void ReadMetaData()

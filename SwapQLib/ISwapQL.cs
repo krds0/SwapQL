@@ -50,6 +50,9 @@ namespace SwapQLib
             comm.CommandText = $"Select * from {tblName}";
             DbDataReader reader = comm.ExecuteReader();
 
+            //Könnte Code vereinfachen:
+            //IEnumerator<DbColumn> columns = reader.GetColumnSchema().GetEnumerator();
+
             //Für jede Zeile ein INSERT statement generieren
             string generalStatement = $"INSERT INTO {tblName} VALUES(";
             while(reader.Read())
@@ -59,15 +62,7 @@ namespace SwapQLib
                 //Alle Spalten der Zeile durchgehen
                 for (int colIndex = 0; colIndex < cols.Count; colIndex++)
                 {
-                    //TODO: In Hilfsfunktion auslagern
-                    if (colTypes[colIndex] == "int") //TODO: Nach anderen numerischen Datentypen checken
-                    {
-                        statement += $"{reader.GetString(colIndex)}";
-                    }
-                    else
-                    {
-                        statement += $"\"{reader.GetString(colIndex)}\"";
-                    }
+                    statement += checkColumn(colTypes[colIndex], reader.GetString(colIndex)); //Je nach Datentyp das insert statement ändern
                     if (colIndex != colTypes.Count - 1) //Checken, ob letzte Spalte in Zeile
                     {
                         statement += ", ";
@@ -78,6 +73,22 @@ namespace SwapQLib
             }
 
             return statements;
+        }
+
+
+        private string checkColumn(string colType, string colContent)
+        {
+            string statement = "";
+            if (colType == "int") //TODO: Nach anderen numerischen Datentypen checken
+            {
+                statement += $"{colContent}";
+            }
+            else
+            {
+                statement += $"\"{colContent}\"";
+            }
+
+            return statement;
         }
     }
 }
