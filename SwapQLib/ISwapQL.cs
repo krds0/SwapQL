@@ -3,6 +3,8 @@ using System.Data;
 using System.Data.Common;
 using System.Net;
 using System.Linq;
+using System;
+using System.Globalization;
 
 namespace SwapQLib
 {
@@ -22,6 +24,37 @@ namespace SwapQLib
             return Connection;
         }
 
+        /// <summary>
+        /// Helper method to print the mappings from database type names to
+        /// C# type names.
+        /// </summary>
+        public void PrintDataTypeMappings()
+        {
+            DataTable dt = Connection.GetSchema("DataTypes");
+            List<DataColumn> cols = dt.Columns.AsGeneric().ToList();
+            Console.WriteLine($"{cols[0].ColumnName} - {cols[3].ColumnName} - {cols[5].ColumnName}");
+            foreach (DataRow item in dt.Rows)
+            {
+                Console.WriteLine(item[0] + " - " + item[3] + " - " + item[5]);
+            }
+        }
+
+        public List<string> GetTableNames()
+        {
+            var tableNames = new List<string>();
+            string[] restrictions = new string[] { null, Connection.Database, null, null };
+            DataTable dt = Connection.GetSchema("Tables", restrictions);
+            List<DataColumn> cols = dt.Columns.AsGeneric().ToList();
+            foreach (DataRow item in dt.Rows)
+            {
+                // TODO: consider multiple schemas - so far we only care about the table name
+                Console.WriteLine(item[2]);
+                tableNames.Add((string)item[2]);
+            }
+
+            return tableNames;
+        }
+
         public List<string> CreateInserts(string tblName)
         {
             //Läuft für jede Tabelle einmal
@@ -32,63 +65,64 @@ namespace SwapQLib
 
             List<string> statements = new List<string>();
 
-            // Die Spalten der angegeben Tabelle bekommen
-            string[] restrictions = new string[] { null, null, tblName, null };
-            DataTable dt = Connection.GetSchema("Columns", restrictions);
-            List<DataColumn> cols = dt.Columns.AsGeneric().ToList();
+            ////// Die Spalten der angegeben Tabelle bekommen
+            ////string[] restrictions = new string[] { null, null, tblName, null };
+            ////DataTable dt = Connection.GetSchema("Columns", restrictions);
+            ////List<DataColumn> cols = dt.Columns.AsGeneric().ToList();
 
-            //Den Datentyp jeder Spalte auslesen
-            List<string> colTypes = new List<string>();
-            foreach (var item in cols)
-            {
-                string datatype = item.DataType.Name;
-                colTypes.Add(datatype);
-            }
-
+            //////Den Datentyp jeder Spalte auslesen
+            ////List<string> colTypes = new List<string>();
+            ////foreach (var item in cols)
+            ////{
+            ////    string datatype = item.DataType.Name;
+            ////    colTypes.Add(datatype);
+            ////}
+            
             //Alle Zeilen der Quell-Tabelle lesen
             var comm = Connection.CreateCommand();
-            comm.CommandText = $"Select * from {tblName}";
-            DbDataReader reader = comm.ExecuteReader();
-
-            //Könnte Code vereinfachen:
-            //IEnumerator<DbColumn> columns = reader.GetColumnSchema().GetEnumerator();
-
-            //Für jede Zeile ein INSERT statement generieren
-            string generalStatement = $"INSERT INTO {tblName} VALUES(";
-            while(reader.Read())
+            comm.CommandText = $"SELECT * FROM {tblName}";
+            using (DbDataReader reader = comm.ExecuteReader())
             {
-                string statement = generalStatement;
+                int fieldCount = reader.FieldCount;
 
-                //Alle Spalten der Zeile durchgehen
-                for (int colIndex = 0; colIndex < cols.Count; colIndex++)
+                //Für jede Zeile ein INSERT statement generieren
+                string generalStatement = $"INSERT INTO {tblName} VALUES(";
+                while (reader.Read())
                 {
-                    statement += checkColumn(colTypes[colIndex], reader.GetString(colIndex)); //Je nach Datentyp das insert statement ändern
-                    if (colIndex != colTypes.Count - 1) //Checken, ob letzte Spalte in Zeile
+                    string statement = generalStatement;
+
+                    //Alle Spalten der Zeile durchgehen
+                    for (int colIndex = 0; colIndex < fieldCount; colIndex++)
                     {
-                        statement += ", ";
+                        statement += GetInsertValue(reader, colIndex); //Je nach Datentyp das insert statement ändern
+                        if (colIndex != fieldCount - 1) //Checken, ob letzte Spalte in Zeile
+                        {
+                            statement += ", ";
+                        }
                     }
+                    statement += ");";
+                    statements.Add(statement);
                 }
-                statement += ");";
-                statements.Add(statement);
+
+                reader.Close();
             }
 
             return statements;
         }
 
-
-        private string checkColumn(string colType, string colContent)
+        public void ExecuteInserts(List<string> insertStatements)
         {
-            string statement = "";
-            if (colType == "int") //TODO: Nach anderen numerischen Datentypen checken
-            {
-                statement += $"{colContent}";
-            }
-            else
-            {
-                statement += $"\"{colContent}\"";
-            }
+            var comm = Connection.CreateCommand();
 
-            return statement;
+            foreach (var insert in insertStatements)
+            {
+                comm.CommandText = insert;
+                int rowsAffected = comm.ExecuteNonQuery();
+                if (rowsAffected != 1)
+                    throw new InvalidOperationException($"INSERT operation returned incorrect value {rowsAffected}. Expected 1.");
+            }
         }
+
+        protected abstract string GetInsertValue(DbDataReader reader, int colIndex);
     }
 }
