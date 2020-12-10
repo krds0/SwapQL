@@ -51,7 +51,7 @@ namespace SwapQL
 
         private static void ReadMetaData()
         {
-            PanicAndExit("everything works yay", ExitCode.InvalidConfig);
+           // PanicAndExit("everything works yay", ExitCode.InvalidConfig);
         }
 
         private static void Connect2Database()

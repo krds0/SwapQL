@@ -58,12 +58,12 @@ namespace SwapQLib
             while(reader.Read())
             {
                 string statement = generalStatement;
-
+                int colCount = reader.FieldCount;
                 //Alle Spalten der Zeile durchgehen
-                for (int colIndex = 0; colIndex < cols.Count; colIndex++)
+                for (int colIndex = 0; colIndex < colCount; colIndex++)
                 {
-                    statement += checkColumn(colTypes[colIndex], reader.GetString(colIndex)); //Je nach Datentyp das insert statement ändern
-                    if (colIndex != colTypes.Count - 1) //Checken, ob letzte Spalte in Zeile
+                    statement += checkColumn(reader.GetFieldType(colIndex), reader.GetString(colIndex)); //Je nach Datentyp das insert statement ändern
+                    if (colIndex != colCount - 1) //Checken, ob letzte Spalte in Zeile
                     {
                         statement += ", ";
                     }
@@ -76,10 +76,10 @@ namespace SwapQLib
         }
 
 
-        private string checkColumn(string colType, string colContent)
+        private string checkColumn(System.Type colType, string colContent)
         {
             string statement = "";
-            if (colType == "int") //TODO: Nach anderen numerischen Datentypen checken
+            if (colType == typeof(int)) //TODO: Nach anderen numerischen Datentypen checken
             {
                 statement += $"{colContent}";
             }
