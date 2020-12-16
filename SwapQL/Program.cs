@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 using AddQL;
 
-using SwapQL.Config;
 using SwapQLib;
+using SwapQLib.Config;
 
 namespace SwapQL
 {
@@ -15,6 +15,8 @@ namespace SwapQL
 
         enum ExitCode : int
         {
+            Success = 0,
+
             InvalidConfig = 10,
 
             SourceConnectionError = 20,
@@ -42,7 +44,15 @@ namespace SwapQL
 
         private static void ReadMetaData()
         {
-            PanicAndExit("everything works yay", ExitCode.InvalidConfig);
+            var constraints = source.GetConstraints();
+            var sql = target.SetConstraints(constraints);
+
+            foreach (var sql_ in sql)
+            {
+                System.Console.WriteLine(sql_);   
+            }
+
+            PanicAndExit("everything works yay", ExitCode.Success);
         }
 
         private static void Connect2Database()

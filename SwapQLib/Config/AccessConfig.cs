@@ -3,9 +3,9 @@ using System.IO;
 
 using Salaros.Configuration;
 
-namespace SwapQL.Config
+namespace SwapQLib.Config
 {
-    internal static class AccessConfig
+    public static class AccessConfig
     {
         public static AccessInfo Target { get; private set; }
         public static AccessInfo Source { get; private set; }

@@ -2,9 +2,9 @@
 
 using Salaros.Configuration;
 
-namespace SwapQL.Config
+namespace SwapQLib.Config
 {
-    internal class AccessInfo
+    public class AccessInfo
     {
         public readonly string Kind;
         public readonly IPAddress Host;
