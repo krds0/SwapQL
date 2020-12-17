@@ -43,5 +43,11 @@ namespace AddQL
 
             return sql_statement.ToArray();
         }
+
+        protected override string GetInsertValue(DbDataReader reader, int colIndex)
+        {
+            throw new System.NotImplementedException();
+        }
     }
+
 }

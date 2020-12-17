@@ -39,7 +39,25 @@ namespace SwapQL
 
             Connect2Database();
 
-            ReadMetaData();
+            // ReadMetaData();
+
+            List<string> tableNames = source.GetTableNames();
+
+            foreach (var tableName in tableNames)
+            {
+                // TODO: reading and inserting should happen in lockstep - read one line,
+                //       insert one line. Needs small refactoring but nothing major.
+
+                List<string> insertStatements = source.CreateInserts(tableName);
+                foreach (var item in insertStatements)
+                {
+                    Console.WriteLine(item);
+                }
+
+                target.ExecuteInserts(insertStatements);
+            }
+
+            Console.ReadLine();
         }
 
         private static void ReadMetaData()
