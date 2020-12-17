@@ -44,6 +44,13 @@ namespace SwapQL
 
         private static void ReadMetaData()
         {
+            // 1.
+            var create_statements = source.CreateTableStatement();
+
+            // 2.
+            var insert = 0;
+
+            // 3.
             var constraints = source.GetConstraints();
             var sql = target.SetConstraints(constraints);
 

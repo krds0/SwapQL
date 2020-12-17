@@ -25,6 +25,44 @@ namespace SwapQLib
             return Connection;
         }
 
+        public virtual string[] CreateTableStatement()
+        {
+            /*
+            CREATE TABLE Persons (
+            PersonID int,
+            LastName varchar(255),
+            FirstName varchar(255),
+            Address varchar(255),
+            City varchar(255)
+            );
+            */
+
+            var statements = new List<string>();
+            var tables = Connection.GetSchema("Tables", new[] {AccessConfig.Source.Databasename});
+
+            foreach (var table in tables.Rows)
+            {
+                string statement = $"CREATE TABLE {true} (";
+
+                DataTable dt = Connection.GetSchema("Columns", new[] {AccessConfig.Source.Databasename});   
+
+                for (int i = 0; i < dt.Rows.Count - 1; i++)
+                {
+                    //string[] column_names = new string[] { "column_name", "ordinal_position", "is_nullable", "data_type", "column_key"};
+                    //var selectedColumns = dt.Columns.AsGeneric().Where(c => column_names.Contains(c.ColumnName, StringComparer.OrdinalIgnoreCase));
+                    //var colName = dt.AsGeneric().Where(c => c.ColumnName == "column_name");
+                    string colName = dt.Rows[i].Field<string>("column_name");
+                    string colType = dt.Rows[i].Field<string>("data_type");
+                    statement += $"{colName} {colType}";
+    
+                    statement += ", ";
+                }
+                statement += ");";   
+            }
+
+            return statements.ToArray();
+        }
+
         // retrives metadata from DB and calls its overloeaded method
         public virtual SwapQLConstraint[] GetConstraints()
         {

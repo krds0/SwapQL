@@ -35,6 +35,10 @@ namespace AddQL
                 {
                     sql_statement.Add($"ALTER TABLE {constraint.table} ALTER {constraint.column} SET NOT NULL");
                 }
+                else if (constraint is SwapQLCheckConstraint check_constraint)
+                {
+                    sql_statement.Add($"ALTER TABLE {check_constraint.table} ADD CHECK (char_length(zipcode) = 5);");
+                }
             }
 
             return sql_statement.ToArray();

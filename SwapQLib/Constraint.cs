@@ -26,4 +26,14 @@ namespace SwapQLib
     {
         public SwapQLNullConstraint(string table, string column) : base(table, column) { }
     }
+
+    public class SwapQLCheckConstraint : SwapQLConstraint
+    {
+        public string check;
+
+        public SwapQLCheckConstraint(string table, string column, string check) : base(table, column)
+        {
+            this.check = check;
+        }
+    }
 }
