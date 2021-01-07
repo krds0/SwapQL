@@ -8,14 +8,9 @@ using SwapQLib;
 
 namespace AddQL
 {
-    public class PostgresFunctions : ISwapQL
+    public class PostgresConnection : SwapQLConnection
     {
-        public override DbProviderFactory database => NpgsqlFactory.Instance;
-
-        public override SwapQLConstraint[] GetConstraints()
-        {
-            throw new NotImplementedException();
-        }
+        protected override DbProviderFactory database => NpgsqlFactory.Instance;
 
         public override string[] SetConstraints(SwapQLConstraint[] constraints)
         {
@@ -42,11 +37,6 @@ namespace AddQL
             }
 
             return sql_statement.ToArray();
-        }
-
-        protected override string GetInsertValue(DbDataReader reader, int colIndex)
-        {
-            throw new System.NotImplementedException();
         }
     }
 

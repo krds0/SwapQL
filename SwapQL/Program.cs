@@ -8,29 +8,28 @@ using SwapQLib.Config;
 
 namespace SwapQL
 {
-    internal class Program
+    class Program
     {
-        static ISwapQL source, target;
-        public static Dictionary<string, ISwapQL> Instace;
+        static SwapQLConnection source, target;
+        public static Dictionary<string, SwapQLConnection> Instace;
 
         enum ExitCode : int
         {
             Success = 0,
+            UnsupportedDatabase = 2,
 
             InvalidConfig = 10,
 
             SourceConnectionError = 20,
             TargetConnectionError = 21,
-
-            UnsupportedDatabase = 2
         }
 
-        static void Main(string[] args)
+        static void Main()
         {
-            Instace = new Dictionary<string, ISwapQL>()
+            Instace = new Dictionary<string, SwapQLConnection>()
             {
-                {"mysql", new MysqlFunctions() },
-                {"postgres", new PostgresFunctions() }
+                {"mysql", new MysqlConnection() },
+                {"postgres", new PostgresConnection() }
             };
 
             Console.Title = "SwapQL";
@@ -39,36 +38,22 @@ namespace SwapQL
 
             Connect2Database();
 
-            // ReadMetaData();
+            ReadMetaData();
 
-            List<string> tableNames = source.GetTableNames();
+            CreateDatabaseStructure();
 
-            foreach (var tableName in tableNames)
-            {
-                // TODO: reading and inserting should happen in lockstep - read one line,
-                //       insert one line. Needs small refactoring but nothing major.
+            PopulateDatabase();
 
-                List<string> insertStatements = source.CreateInserts(tableName);
-                foreach (var item in insertStatements)
-                {
-                    Console.WriteLine(item);
-                }
-
-                target.ExecuteInserts(insertStatements);
-            }
-
-            Console.ReadLine();
+            AlterAddCostraints();
+            
+            PanicAndExit("everything works yay", ExitCode.Success);
         }
-
-        private static void ReadMetaData()
+ 
+        private static void AlterAddCostraints()
         {
-            // 1.
-            var create_statements = source.CreateTableStatement();
-
-            // 2.
-            var insert = 0;
-
-            // 3.
+            Console.WriteLine("Integrating constraints...");
+            System.Threading.Thread.Sleep(500);
+            
             var constraints = source.GetConstraints();
             var sql = target.SetConstraints(constraints);
 
@@ -77,7 +62,50 @@ namespace SwapQL
                 System.Console.WriteLine(sql_);   
             }
 
-            PanicAndExit("everything works yay", ExitCode.Success);
+            foreach (var item in sql)
+            {
+                var comm = target.Connection.CreateCommand();
+                comm.CommandText = item;
+                comm.ExecuteNonQuery();
+            }
+        }
+
+        private static void PopulateDatabase()
+        {
+            Console.WriteLine("Inserting data...");
+            System.Threading.Thread.Sleep(500);
+
+            string[] tableNames = source.GetTableNames();
+            foreach (var tableName in tableNames)
+            {
+                // TODO: reading and inserting should happen in lockstep - read one line,
+                //       insert one line. Needs small refactoring but nothing major.
+
+                string[] insertStatements = source.GetData(tableName);
+
+                target.SetData(insertStatements);
+            }
+        }
+
+        private static void CreateDatabaseStructure()
+        {
+            Console.WriteLine("Creating database structure...");
+            System.Threading.Thread.Sleep(500);
+
+            var comm = target.Connection.CreateCommand();
+            var create_statements = source.GetDatabaseStructure();
+            
+            foreach (var item in create_statements)
+            {
+                comm.CommandText = item;
+                comm.ExecuteNonQuery();
+            }
+        }
+
+        private static void ReadMetaData()
+        {
+            Console.WriteLine("Reading Metadata...");
+            System.Threading.Thread.Sleep(500);
         }
 
         private static void Connect2Database()
@@ -117,7 +145,7 @@ namespace SwapQL
                 PanicAndExit($"{e.Message} to target database", ExitCode.TargetConnectionError);
             }
 
-            Console.WriteLine("Connected to database...");
+            Console.WriteLine("Connected to database...\n");
         }
 
         private static void ReadConfig()
@@ -131,13 +159,13 @@ namespace SwapQL
             {
                 PanicAndExit(e.Message, ExitCode.InvalidConfig);
             }
-            Console.WriteLine("Configuration read...");
+            Console.WriteLine("Configuration read...\n");
         }
 
         private static void PanicAndExit(string msg, ExitCode exitCode)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine($"\n{msg}\nError: {exitCode}:{(int)exitCode}");
+            Console.ForegroundColor = exitCode == ExitCode.Success ? ConsoleColor.Green: ConsoleColor.Red;
+            Console.Error.WriteLine($"\n{msg}\n{(exitCode == ExitCode.Success ? "": "Error: ")}{exitCode}:{(int)exitCode}");
             Console.ResetColor();
             Environment.Exit((int)exitCode);
         }
