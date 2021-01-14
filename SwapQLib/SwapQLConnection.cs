@@ -32,9 +32,15 @@ namespace SwapQLib
         // A wrapper function around GetConstraints(DataTable) to override in an derived class
         public virtual SwapQLConstraint[] GetConstraints()
         {
-            var columns = Connection.GetSchema("Columns", new[] {AccessConfig.Source.Databasename, null, null, null});
+            var columns = Connection.GetSchema("Columns", new[] { AccessConfig.Source.Databasename, null, null, null });
 
             return GetConstraints(columns);
+        }
+        public virtual SwapQLConstraint[] GetForeignKeyConstraints()
+        {
+            var columns = Connection.GetSchema("Foreign Key Columns", new[] { AccessConfig.Source.Databasename });
+
+            return GetForeignKeyConstraints(columns);
         }
         // Extract the information of constraints and create an internal representation for each of them
         protected SwapQLConstraint[] GetConstraints(DataTable columns)
@@ -58,7 +64,7 @@ namespace SwapQLib
                         Debug.WriteLine($"\t\tis PRIMARY KEY");
                         constraints.Add(new SwapQLPrimaryKeyConstraint(table_name, column_name));
                         break;
-                    
+
                     case "MUL":
                         Debug.WriteLine($"\t\tis UNIQUE");
                         constraints.Add(new SwapQLUniqueConstraint(table_name, column_name));
@@ -74,6 +80,20 @@ namespace SwapQLib
 
             return constraints.ToArray();
         }
+        protected SwapQLConstraint[] GetForeignKeyConstraints(DataTable columns)
+        {
+            Debug.WriteLine("[GetForeignKeyConstraints]:");
+
+            var constraints = new List<SwapQLConstraint>();
+
+            foreach (DataRow meta in columns.Rows)
+            {
+                var foreignKey = new SwapQLForeignKeyConstraint(meta[2] as string, meta[10] as string, meta[11] as string, meta[5] as string, meta[6] as string);
+                constraints.Add(foreignKey);
+            }
+
+            return constraints.ToArray();
+        }
 
         // Given an array of constraints, construct SQL statements from them.
         public virtual string[] SetConstraints(SwapQLConstraint[] constraints)
@@ -81,47 +101,53 @@ namespace SwapQLib
             throw new NotImplementedException();
         }
 
+        public virtual SwapQLConstraint[] GetCheckConstraint()
+        {
+            var columns = Connection.GetSchema("IndexColumns", new[] { null, AccessConfig.Source.Databasename });
+
+            if (columns.Rows.Count > 0)
+                return null;
+
+            return null;
+        }
 
 
         // A wrapper function around GetDatabaseStructure(DataTable) to override in an derived class
-        public virtual string[] GetDatabaseStructure()
+        public virtual string[] GetDatabaseStructure(SwapQLConnection tConnection)
         {
             var createStatements = new List<string>();
-            var tables = Connection.GetSchema("Tables", new[] {AccessConfig.Source.Databasename});
+            var tables = Connection.GetSchema("Tables", new[] { AccessConfig.Source.Databasename });
 
             foreach (DataRow table in tables.Rows)
             {
                 var tableName = table[2] as string;
-                var dt = Connection.GetSchema("Columns", new[] {AccessConfig.Source.Databasename, tableName});
+                var dt = Connection.GetSchema("Columns", new[] { AccessConfig.Source.Databasename, tableName });
 
-                string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt)});";
+                string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt, tConnection)});";
             }
 
             return createStatements.ToArray();
         }
+
         // Construct an SQL statement for each column 
-        protected string GetDatabaseStructure(DataTable columns)
+        protected string GetDatabaseStructure(DataTable columns, SwapQLConnection tConnection)
         {
             var columnDefinition = "";
             string columnName, columnType;
 
             for (var i = 0; i < columns.Rows.Count - 1; i++)
             {
-                columnName = columns.Rows[i].Field<string>("column_name");
-                columnType = columns.Rows[i].Field<string>("data_type");
-
-                if (columnType == "varchar")
-                    columnType += "(255)";
+                var column = columns.Rows[i];
+                columnName = column.Field<string>("column_name");
+                columnType = tConnection.GetTDataTypeName(column.Field<string>("data_type"));
 
                 columnDefinition += $"{columnName} {columnType}, ";
+
             }
 
             columnName = columns.Rows[columns.Rows.Count - 1].Field<string>("column_name");
-            columnType = columns.Rows[columns.Rows.Count - 1].Field<string>("data_type");
-            
-            if (columnType == "varchar")
-                columnType += "(255)";
-            
+            columnType = tConnection.GetTDataTypeName(columns.Rows[columns.Rows.Count - 1].Field<string>("data_type"));
+
             columnDefinition += $"{columnName} {columnType}";
 
             return columnDefinition;
@@ -158,7 +184,7 @@ namespace SwapQLib
             ////    string datatype = item.DataType.Name;
             ////    colTypes.Add(datatype);
             ////}
-            
+
             //Alle Zeilen der Quell-Tabelle lesen
             var comm = Connection.CreateCommand();
             comm.CommandText = $"SELECT * FROM {table}";
@@ -190,7 +216,7 @@ namespace SwapQLib
 
             return statements.ToArray();
         }
-        
+
         // Executes the given array of SQL statements
         public void SetData(string[] insertStatements)
         {
@@ -218,7 +244,7 @@ namespace SwapQLib
         protected string[] GetTableNames(DataTable tables)
         {
             var tableNames = new List<string>();
-            
+
 
             foreach (DataRow item in tables.Rows)
             {
@@ -229,7 +255,7 @@ namespace SwapQLib
 
             return tableNames.ToArray();
         }
-    
+
 
 
         protected void PrintDataTypeMappings()
@@ -242,6 +268,8 @@ namespace SwapQLib
                 Console.WriteLine(item[0] + " - " + item[3] + " - " + item[5]);
             }
         }
+
+        protected abstract string GetTDataTypeName(string sDataTypeName);
 
         protected virtual string GetInsertValue(DbDataReader reader, int colIndex)
         {

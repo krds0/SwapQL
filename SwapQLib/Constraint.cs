@@ -36,4 +36,22 @@ namespace SwapQLib
             this.check = check;
         }
     }
+
+    public class SwapQLForeignKeyConstraint : SwapQLConstraint
+    {
+        public string constraintName;
+        public string sourceTable;
+        public string sourceColumn;
+        public string targetTable;
+        public string targetColumn;
+
+        public SwapQLForeignKeyConstraint(string constraintName, string sourceTable, string sourceColumn, string targetTable, string targetColumn) : base("", "")
+        {
+            this.constraintName = constraintName;
+            this.sourceTable = sourceTable;
+            this.sourceColumn = sourceColumn;
+            this.targetTable = targetTable;
+            this.targetColumn = targetColumn;
+        }
+    }
 }

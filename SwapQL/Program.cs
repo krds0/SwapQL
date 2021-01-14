@@ -45,28 +45,27 @@ namespace SwapQL
             PopulateDatabase();
 
             AlterAddCostraints();
-            
+
             PanicAndExit("everything works yay", ExitCode.Success);
         }
- 
+
         private static void AlterAddCostraints()
         {
             Console.WriteLine("Integrating constraints...");
             System.Threading.Thread.Sleep(500);
-            
-            var constraints = source.GetConstraints();
-            var sql = target.SetConstraints(constraints);
 
-            foreach (var sql_ in sql)
+            foreach (var constraints in new[] { source.GetConstraints(), source.GetForeignKeyConstraints() })
             {
-                System.Console.WriteLine(sql_);   
-            }
+                var sql = target.SetConstraints(constraints);
 
-            foreach (var item in sql)
-            {
-                var comm = target.Connection.CreateCommand();
-                comm.CommandText = item;
-                comm.ExecuteNonQuery();
+                foreach (var item in sql)
+                {
+                    Console.WriteLine(item);
+
+                    var comm = target.Connection.CreateCommand();
+                    comm.CommandText = item;
+                    comm.ExecuteNonQuery();
+                }
             }
         }
 
@@ -93,7 +92,17 @@ namespace SwapQL
             System.Threading.Thread.Sleep(500);
 
             var comm = target.Connection.CreateCommand();
-            var create_statements = source.GetDatabaseStructure();
+
+            comm.CommandText = "drop table IF EXISTS abteilung;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop table IF EXISTS checks;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop table IF EXISTS person;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop table IF EXISTS foreigners;";
+            comm.ExecuteNonQuery();
+            
+            var create_statements = source.GetDatabaseStructure(target);
             
             foreach (var item in create_statements)
             {
@@ -164,8 +173,8 @@ namespace SwapQL
 
         private static void PanicAndExit(string msg, ExitCode exitCode)
         {
-            Console.ForegroundColor = exitCode == ExitCode.Success ? ConsoleColor.Green: ConsoleColor.Red;
-            Console.Error.WriteLine($"\n{msg}\n{(exitCode == ExitCode.Success ? "": "Error: ")}{exitCode}:{(int)exitCode}");
+            Console.ForegroundColor = exitCode == ExitCode.Success ? ConsoleColor.Green : ConsoleColor.Red;
+            Console.Error.WriteLine($"\n{msg}\n{(exitCode == ExitCode.Success ? "" : "Error: ")}{exitCode}:{(int)exitCode}");
             Console.ResetColor();
             Environment.Exit((int)exitCode);
         }
