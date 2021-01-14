@@ -34,6 +34,10 @@ namespace AddQL
                 {
                     sql_statement.Add($"ALTER TABLE {check_constraint.table} ADD CHECK (char_length(zipcode) = 5);");
                 }
+                else if (constraint is SwapQLForeignKeyConstraint foreign_constraint)
+                {
+                    sql_statement.Add($"ALTER TABLE {foreign_constraint.targetTable} ADD CONSTRAINT {foreign_constraint.constraintName} FOREIGN KEY ({foreign_constraint.targetColumn}) REFERENCES {foreign_constraint.sourceTable} ({foreign_constraint.sourceColumn});");
+                }
             }
 
             return sql_statement.ToArray();

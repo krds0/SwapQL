@@ -25,6 +25,7 @@ namespace AddQL
                 var dt = Connection.GetSchema("Columns", new[] {null, AccessConfig.Source.Databasename, tableName });
 
                 string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt)});";
+                createStatements.Add(statement);
             }
 
             return createStatements.ToArray();
@@ -35,6 +36,12 @@ namespace AddQL
             var columns = Connection.GetSchema("Columns", new[] {null, AccessConfig.Source.Databasename });
 
             return GetConstraints(columns);
+        }
+        public override SwapQLConstraint[] GetForeignKeyConstraints()
+        {
+            var columns = Connection.GetSchema("Foreign Key Columns", new[] { null, AccessConfig.Source.Databasename });
+
+            return GetForeignKeyConstraints(columns);
         }
 
         public override string[] GetTableNames()
