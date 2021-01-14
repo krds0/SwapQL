@@ -14,7 +14,7 @@ namespace AddQL
     {
         protected override DbProviderFactory database => MySqlClientFactory.Instance;
 
-        public override string[] GetDatabaseStructure()
+        public override string[] GetDatabaseStructure(SwapQLConnection tConnection)
         {
             var createStatements = new List<string>();
             var tables = Connection.GetSchema("Tables", new[] {null, AccessConfig.Source.Databasename });
@@ -24,7 +24,7 @@ namespace AddQL
                 var tableName = table[2] as string;
                 var dt = Connection.GetSchema("Columns", new[] {null, AccessConfig.Source.Databasename, tableName });
 
-                string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt)});";
+                string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt, tConnection)});";
                 createStatements.Add(statement);
             }
 
@@ -49,6 +49,11 @@ namespace AddQL
             var tables = Connection.GetSchema("Tables", new[] {null, Connection.Database });
 
             return GetTableNames(tables);
+        }
+
+        protected override string GetTDataTypeName(string sDatatTypeName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

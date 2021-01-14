@@ -92,8 +92,18 @@ namespace SwapQL
             System.Threading.Thread.Sleep(500);
 
             var comm = target.Connection.CreateCommand();
-            var create_statements = source.GetDatabaseStructure();
 
+            comm.CommandText = "drop table IF EXISTS abteilung;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop table IF EXISTS checks;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop table IF EXISTS person;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop table IF EXISTS foreigners;";
+            comm.ExecuteNonQuery();
+            
+            var create_statements = source.GetDatabaseStructure(target);
+            
             foreach (var item in create_statements)
             {
                 comm.CommandText = item;
