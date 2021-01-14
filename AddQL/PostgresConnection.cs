@@ -1,6 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
+using System.Net;
+using System.Linq;
+
+using SwapQLib.Config;
+using System.Globalization;
 
 using Npgsql;
 
@@ -37,6 +44,43 @@ namespace AddQL
             }
 
             return sql_statement.ToArray();
+        }
+
+
+        protected override string GetTDataTypeName(string sTypeName) //Find Postgresql Name of Datatype for Create Statements
+        {
+            sTypeName = sTypeName.ToUpper();
+            switch (sTypeName)
+            {
+                case "DATETIME":
+                case "TIMESTAMP": return "TIMESTAMP";
+                case "CHAR":        // fall through
+                case "NCHAR":       // fall through
+                case "VARCHAR": return AddSize(sTypeName);
+                case "NVARCHAR": return AddSize("VARCHAR");
+                case "TINYTEXT":    // fall through
+                case "MEDIUMTEXT":  // fall through
+                case "LONGTEXT":    // fall through
+                case "TEXT": return "TEXT"; //Postgresql only has the "Text" Datatype
+                case "DOUBLE": return "DOUBLE PRECISION";
+                case "FLOAT": return sTypeName;
+                case "DECIMAL": return sTypeName;
+                case "NUMERIC": return sTypeName;
+                case "TINYINT":
+                case "TINY INT":
+                case "SMALLINT": return "SMALLINT";
+                case "MEDIUMINT":
+                case "INT": return "INT"; //PostgreSQL supports SmallINT, INT, and BIGINT
+                case "BIGINT": return sTypeName;
+                default:
+                    throw new ArgumentException("Unsupported column type found: " + sTypeName);
+            }
+        }
+
+        protected string AddSize(string typename)
+        {
+            //TODO: ADD ACTUAL SIZE
+            return $"{typename}(20)";
         }
     }
 

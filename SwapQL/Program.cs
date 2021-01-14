@@ -93,7 +93,7 @@ namespace SwapQL
             System.Threading.Thread.Sleep(500);
 
             var comm = target.Connection.CreateCommand();
-            var create_statements = source.GetDatabaseStructure();
+            var create_statements = source.GetDatabaseStructure(target);
             
             foreach (var item in create_statements)
             {

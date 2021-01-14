@@ -84,7 +84,7 @@ namespace SwapQLib
 
 
         // A wrapper function around GetDatabaseStructure(DataTable) to override in an derived class
-        public virtual string[] GetDatabaseStructure()
+        public virtual string[] GetDatabaseStructure(SwapQLConnection tConnection)
         {
             var createStatements = new List<string>();
             var tables = Connection.GetSchema("Tables", new[] {AccessConfig.Source.Databasename});
@@ -94,35 +94,34 @@ namespace SwapQLib
                 var tableName = table[2] as string;
                 var dt = Connection.GetSchema("Columns", new[] {AccessConfig.Source.Databasename, tableName});
 
-                string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt)});";
+                string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt, tConnection)});";
             }
 
             return createStatements.ToArray();
         }
+
         // Construct an SQL statement for each column 
-        protected string GetDatabaseStructure(DataTable columns)
+        protected string GetDatabaseStructure(DataTable columns, SwapQLConnection tConnection)
         {
             var columnDefinition = "";
             string columnName, columnType;
 
-            for (var i = 0; i < columns.Rows.Count - 1; i++)
+            for (var i = 0; i < columns.Rows.Count; i++)
             {
-                columnName = columns.Rows[i].Field<string>("column_name");
-                columnType = columns.Rows[i].Field<string>("data_type");
+                var column = columns.Rows[i];
+                columnName = column.Field<string>("column_name");
+                columnType = tConnection.GetTDataTypeName(column.Field<string>("data_type"));
 
-                if (columnType == "varchar")
-                    columnType += "(255)";
+                if(i == columns.Rows.Count -1) //For last column in table
+                {
+                    columnDefinition += $"{columnName} {columnType}";
+                }
+                else
+                {
+                    columnDefinition += $"{columnName} {columnType}, ";
+                }
 
-                columnDefinition += $"{columnName} {columnType}, ";
             }
-
-            columnName = columns.Rows[columns.Rows.Count - 1].Field<string>("column_name");
-            columnType = columns.Rows[columns.Rows.Count - 1].Field<string>("data_type");
-            
-            if (columnType == "varchar")
-                columnType += "(255)";
-            
-            columnDefinition += $"{columnName} {columnType}";
 
             return columnDefinition;
         }
@@ -242,6 +241,8 @@ namespace SwapQLib
                 Console.WriteLine(item[0] + " - " + item[3] + " - " + item[5]);
             }
         }
+
+        protected abstract string GetTDataTypeName(string sDataTypeName);
 
         protected virtual string GetInsertValue(DbDataReader reader, int colIndex)
         {
