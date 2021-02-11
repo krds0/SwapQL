@@ -29,7 +29,7 @@ namespace SwapQLib
         }
 
 
-        // A wrapper function around GetConstraints(DataTable) to override in an derived class
+        // A wrapper function around GetConstraints(DataTable) to override in a derived class
         public virtual SwapQLConstraint[] GetConstraints()
         {
             var columns = Connection.GetSchema("Columns", new[] { AccessConfig.Source.Databasename, null, null, null });
@@ -112,7 +112,7 @@ namespace SwapQLib
         }
 
 
-        // A wrapper function around GetDatabaseStructure(DataTable) to override in an derived class
+        // A wrapper function around GetDatabaseStructure(DataTable) to override in a derived class
         public virtual string[] GetDatabaseStructure(SwapQLConnection tConnection)
         {
             var createStatements = new List<string>();
@@ -233,7 +233,7 @@ namespace SwapQLib
 
 
 
-        // A wrapper function around GetTableNames(DataTable) to override in an derived class
+        // A wrapper function around GetTableNames(DataTable) to override in a derived class
         public virtual string[] GetTableNames()
         {
             var tables = Connection.GetSchema("Tables", new[] { Connection.Database });
