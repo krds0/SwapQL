@@ -257,6 +257,34 @@ namespace SwapQLib
         }
 
 
+        // A wrapper function around GetAtrributeAutoIncrement(DataTable) to override in a dereived class
+        public virtual SwapQLAutoIncrement[] GetAtrributeAutoIncrement()
+        {
+            var tables = Connection.GetSchema("Columns", new[] { Connection.Database });
+
+            return GetAtrributeAutoIncrement(tables);
+        }
+        protected SwapQLAutoIncrement[] GetAtrributeAutoIncrement(DataTable meta)
+        {
+            var autoIncrement = new List<SwapQLAutoIncrement>();
+
+            foreach (DataRow item in meta.Rows)
+            {
+                // auto_increment
+                if (item[16] as string == "auto_increment")
+                {
+                    var column_auto_increment = new SwapQLAutoIncrement(item[2] as string, item[3] as string);
+                    autoIncrement.Add(column_auto_increment);
+                }
+            }
+
+            return autoIncrement.ToArray();
+        }
+
+        public virtual string[] SetAtrributeAutoIncrement(SwapQLAutoIncrement[] autoIncrements)
+        {
+            throw new NotImplementedException();
+        }
 
         protected void PrintDataTypeMappings()
         {

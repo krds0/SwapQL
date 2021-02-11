@@ -46,7 +46,27 @@ namespace SwapQL
 
             AlterAddCostraints();
 
+            AlterAddAutoIncrement();
+
             PanicAndExit("everything works yay", ExitCode.Success);
+        }
+
+        private static void AlterAddAutoIncrement()
+        {
+            Console.WriteLine("Integrating auto_increment...");
+            System.Threading.Thread.Sleep(500);
+
+            var columns_with_autoIncrement = source.GetAtrributeAutoIncrement();
+            var sql_statements = target.SetAtrributeAutoIncrement(columns_with_autoIncrement);
+
+            foreach (var sql in sql_statements)
+            {
+                Console.WriteLine(sql);
+
+                var comm = target.Connection.CreateCommand();
+                comm.CommandText = sql;
+                comm.ExecuteNonQuery();
+            }
         }
 
         private static void AlterAddCostraints()
@@ -101,9 +121,13 @@ namespace SwapQL
             comm.ExecuteNonQuery();
             comm.CommandText = "drop table IF EXISTS foreigners;";
             comm.ExecuteNonQuery();
-            
+            comm.CommandText = "drop table IF EXISTS Persons;";
+            comm.ExecuteNonQuery();
+            comm.CommandText = "drop sequence IF EXISTS sequence_Persons_ID;";
+            comm.ExecuteNonQuery();
+
             var create_statements = source.GetDatabaseStructure(target);
-            
+
             foreach (var item in create_statements)
             {
                 comm.CommandText = item;

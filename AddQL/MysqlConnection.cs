@@ -44,6 +44,13 @@ namespace AddQL
             return GetForeignKeyConstraints(columns);
         }
 
+        public override SwapQLAutoIncrement[] GetAtrributeAutoIncrement()
+        {
+            var tables = Connection.GetSchema("Columns", new[] { null, Connection.Database });
+
+            return GetAtrributeAutoIncrement(tables);
+        }
+
         public override string[] GetTableNames()
         {
             var tables = Connection.GetSchema("Tables", new[] {null, Connection.Database });

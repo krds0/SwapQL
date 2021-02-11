@@ -50,6 +50,18 @@ namespace AddQL
             return sql_statement.ToArray();
         }
 
+        public override string[] SetAtrributeAutoIncrement(SwapQLAutoIncrement[] autoIncrements)
+        {
+            var sql_statement = new List<string>();
+
+            foreach (var autoIncrement in autoIncrements)
+            {
+                sql_statement.Add($"CREATE SEQUENCE sequence_{autoIncrement.table}_{autoIncrement.column};");
+                sql_statement.Add($"ALTER TABLE {autoIncrement.table} ALTER COLUMN {autoIncrement.column} SET DEFAULT nextval('sequence_{autoIncrement.table}_{autoIncrement.column}');");
+            }
+
+            return sql_statement.ToArray();
+        }
 
         protected override string GetTDataTypeName(string sTypeName) //Find Postgresql Name of Datatype for Create Statements
         {
