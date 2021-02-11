@@ -68,21 +68,31 @@ namespace AddQL
             sTypeName = sTypeName.ToUpper();
             switch (sTypeName)
             {
-                case "DATETIME":
-                case "TIMESTAMP": return "TIMESTAMP";
-                case "CHAR":        // fall through
-                case "NCHAR":       // fall through
-                case "VARCHAR": return AddSize(sTypeName);
-                case "NVARCHAR": return AddSize("VARCHAR");
-                case "TINYTEXT":    // fall through
-                case "MEDIUMTEXT":  // fall through
-                case "LONGTEXT":    // fall through
-                case "TEXT": return "TEXT"; //Postgresql only has the "Text" Datatype
+                case "DATETIME": return sTypeName;
+                case "DATE":    return sTypeName;
+                case "TIMESTAMP": return sTypeName;
+                case "INTERVAL": return sTypeName;
+                case "TIME": return sTypeName;
+                case "YEAR": return sTypeName;
+                case "CHARACTER": return AddSize(sTypeName);
+                case "CHAR": return AddSize(sTypeName);
+                case "NCHAR":   //fall through: regular varchar stores utf8
+                case "NVARCHAR":
+                case "VARCHAR": return AddSize("VARCHAR");
+                case "CHARACTER VARYING": return AddSize(sTypeName);
+                case "TINYTEXT":    // fall through: Only Text type
+                case "MEDIUMTEXT": 
+                case "LONGTEXT":    
+                case "TEXT": return "TEXT";
                 case "DOUBLE": return "DOUBLE PRECISION";
                 case "FLOAT": return sTypeName;
+                case "REAL": return sTypeName;
                 case "DECIMAL": return sTypeName;
                 case "NUMERIC": return sTypeName;
-                case "TINYINT":
+                case "INT2": return sTypeName;
+                case "INT4": return sTypeName;
+                case "INT8": return sTypeName;
+                case "TINYINT":     // fall through: Only SMALLINT, INT & BIGINT 
                 case "TINY INT":
                 case "SMALLINT": return "SMALLINT";
                 case "MEDIUMINT":
