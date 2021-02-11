@@ -278,11 +278,14 @@ namespace SwapQLib
             // TODO: figure out correct representation of all data types
             //       for insert statements
             // TODO: figure out how to read unsigned variants of SMALLINT, MEDIUMINT, INT, BIGINT
+            //
+            //TODO: DATE doesnt work with inserts yet!
+
             switch (typeName)
             {
                 case "BIT": return reader.GetFieldValue<UInt64>(colIndex).ToString();
-                case "DATE": return reader.GetDateTime(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "DATETIME": return reader.GetDateTime(colIndex).ToString(CultureInfo.InvariantCulture);
+                case "DATE": return Quote(reader.GetString(colIndex)); ;
+                case "DATETIME": return Quote(reader.GetString(colIndex)); ;
                 case "TIMESTAMP": return reader.GetDateTime(colIndex).ToString(CultureInfo.InvariantCulture);
                 case "CHAR":        // fall through
                 case "NCHAR":       // fall through

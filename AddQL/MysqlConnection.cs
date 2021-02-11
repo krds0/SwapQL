@@ -51,9 +51,57 @@ namespace AddQL
             return GetTableNames(tables);
         }
 
-        protected override string GetTDataTypeName(string sDatatTypeName)
+        protected override string GetTDataTypeName(string sTypeName) //Find MySQL Name for SQL Datatype
         {
-            throw new NotImplementedException();
+            sTypeName = sTypeName.ToUpper();
+            switch (sTypeName)
+            {
+                case "DATE": return sTypeName;
+                case "DATETIME": return sTypeName;
+                case "TIMESTAMP": return sTypeName;
+                case "INTERVAL":    // fall through: timespans saved as time
+                case "TIME": return "TIME";
+                case "YEAR": return sTypeName;
+
+                //CHARACTER TYPES
+                case "CHARACTER": return AddSize(sTypeName);
+                case "CHAR": return AddSize(sTypeName);
+                case "NCHAR": return AddSize(sTypeName);
+                case "NVARCHAR": return AddSize(sTypeName);
+                case "CHARACTER VARYING": return AddSize(sTypeName);
+                case "VARCHAR": return AddSize(sTypeName);
+                case "TINYTEXT": return AddSize(sTypeName);
+                case "MEDIUMTEXT": return AddSize(sTypeName);
+                case "LONGTEXT": return AddSize(sTypeName);
+                case "TEXT": return AddSize(sTypeName);
+                //NUMERIC TYPES
+                case "DOUBLE": return sTypeName;
+                case "FLOAT": return sTypeName;
+                case "REAL": return sTypeName;
+                case "DOUBLE PRECISION": return sTypeName;
+                case "DECIMAL": return sTypeName;
+                case "NUMERIC": return sTypeName;
+                case "INT2": return sTypeName;
+                case "INT4": return sTypeName;
+                case "INT8": return sTypeName;
+                case "TINYINT": return sTypeName;
+                case "TINY INT": return sTypeName;
+                case "SMALLINT": return sTypeName;
+                case "MEDIUMINT": return sTypeName;
+                case "INT": return sTypeName;
+                case "BIGINT": return sTypeName;
+                default:
+                    throw new ArgumentException("Unsupported column type found: " + sTypeName);
+            }
         }
+
+        protected string AddSize(string typename)
+        {
+            //TODO: ADD ACTUAL SIZE
+            return $"{typename}(20)";
+        }
+
+
+        //TODO: AddPrecision Function
     }
 }
