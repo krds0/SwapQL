@@ -56,7 +56,7 @@ namespace AddQL
 
             foreach (var autoIncrement in autoIncrements)
             {
-                sql_statement.Add($"CREATE SEQUENCE sequence_{autoIncrement.table}_{autoIncrement.column};");
+                sql_statement.Add($"CREATE SEQUENCE sequence_{autoIncrement.table}_{autoIncrement.column} START WITH {autoIncrement.startValue};");
                 sql_statement.Add($"ALTER TABLE {autoIncrement.table} ALTER COLUMN {autoIncrement.column} SET DEFAULT nextval('sequence_{autoIncrement.table}_{autoIncrement.column}');");
             }
 

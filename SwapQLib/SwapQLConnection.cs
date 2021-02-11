@@ -273,7 +273,11 @@ namespace SwapQLib
                 // auto_increment
                 if (item[16] as string == "auto_increment")
                 {
-                    var column_auto_increment = new SwapQLAutoIncrement(item[2] as string, item[3] as string);
+                    var comm = Connection.CreateCommand();
+                    comm.CommandText = $"SELECT max({item[3]}) FROM {item[2]};";
+                    var sequence_start = comm.ExecuteScalar();
+
+                    var column_auto_increment = new SwapQLAutoIncrement(item[2] as string, item[3] as string, (int)sequence_start + 1);
                     autoIncrement.Add(column_auto_increment);
                 }
             }
