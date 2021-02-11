@@ -65,7 +65,7 @@ namespace SwapQLib
                         constraints.Add(new SwapQLPrimaryKeyConstraint(table_name, column_name));
                         break;
 
-                    case "MUL":
+                    case "UNI":
                         Debug.WriteLine($"\t\tis UNIQUE");
                         constraints.Add(new SwapQLUniqueConstraint(table_name, column_name));
                         break;
