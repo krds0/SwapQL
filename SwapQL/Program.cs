@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Threading.Tasks;
 using AddQL;
 
 using SwapQLib;
@@ -20,11 +21,12 @@ namespace SwapQL
 
             InvalidConfig = 10,
 
-            SourceConnectionError = 20,
-            TargetConnectionError = 21,
+            ConnectionError = 20,
+            SourceConnectionError = 21,
+            TargetConnectionError = 22,
         }
 
-        static void Main()
+        async static Task Main()
         {
             Instace = new Dictionary<string, SwapQLConnection>()
             {
@@ -36,150 +38,19 @@ namespace SwapQL
 
             ReadConfig();
 
-            Connect2Database();
+            await Connect2Database();
 
-            ReadMetaData();
+            await CreateDatabaseStructure();
 
-            CreateDatabaseStructure();
+            await PopulateDatabase();
 
-            PopulateDatabase();
+            await AddCostraints();
 
-            AlterAddCostraints();
-
-            AlterAddAutoIncrement();
+            await AddAutoIncrement();
 
             PanicAndExit("everything works yay", ExitCode.Success);
         }
 
-        private static void AlterAddAutoIncrement()
-        {
-            Console.WriteLine("Integrating auto_increment...");
-            System.Threading.Thread.Sleep(500);
-
-            var columns_with_autoIncrement = source.GetAtrributeAutoIncrement();
-            var sql_statements = target.SetAtrributeAutoIncrement(columns_with_autoIncrement);
-
-            foreach (var sql in sql_statements)
-            {
-                Console.WriteLine(sql);
-
-                var comm = target.Connection.CreateCommand();
-                comm.CommandText = sql;
-                comm.ExecuteNonQuery();
-            }
-        }
-
-        private static void AlterAddCostraints()
-        {
-            Console.WriteLine("Integrating constraints...");
-            System.Threading.Thread.Sleep(500);
-
-            foreach (var constraints in new[] { source.GetConstraints(), source.GetForeignKeyConstraints() })
-            {
-                var sql = target.SetConstraints(constraints);
-
-                foreach (var item in sql)
-                {
-                    Console.WriteLine(item);
-
-                    var comm = target.Connection.CreateCommand();
-                    comm.CommandText = item;
-                    comm.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private static void PopulateDatabase()
-        {
-            Console.WriteLine("Inserting data...");
-            System.Threading.Thread.Sleep(500);
-
-            string[] tableNames = source.GetTableNames();
-            foreach (var tableName in tableNames)
-            {
-                // TODO: reading and inserting should happen in lockstep - read one line,
-                //       insert one line. Needs small refactoring but nothing major.
-
-                string[] insertStatements = source.GetData(tableName);
-
-                target.SetData(insertStatements);
-            }
-        }
-
-        private static void CreateDatabaseStructure()
-        {
-            Console.WriteLine("Creating database structure...");
-            System.Threading.Thread.Sleep(500);
-
-            var comm = target.Connection.CreateCommand();
-
-            comm.CommandText = "drop table IF EXISTS abteilung;";
-            comm.ExecuteNonQuery();
-            comm.CommandText = "drop table IF EXISTS checks;";
-            comm.ExecuteNonQuery();
-            comm.CommandText = "drop table IF EXISTS person;";
-            comm.ExecuteNonQuery();
-            comm.CommandText = "drop table IF EXISTS foreigners;";
-            comm.ExecuteNonQuery();
-            comm.CommandText = "drop table IF EXISTS Persons;";
-            comm.ExecuteNonQuery();
-            comm.CommandText = "drop sequence IF EXISTS sequence_Persons_ID;";
-            comm.ExecuteNonQuery();
-
-            var create_statements = source.GetDatabaseStructure(target);
-
-            foreach (var item in create_statements)
-            {
-                comm.CommandText = item;
-                comm.ExecuteNonQuery();
-            }
-        }
-
-        private static void ReadMetaData()
-        {
-            Console.WriteLine("Reading Metadata...");
-            System.Threading.Thread.Sleep(500);
-        }
-
-        private static void Connect2Database()
-        {
-            Console.WriteLine("Connecting to database...");
-
-            // Source database connection
-            try
-            {
-                var cfg = AccessConfig.Source;
-                source = Instace[cfg.Kind];
-                source.Connect(cfg.Host, cfg.Port, cfg.Databasename, cfg.User, cfg.Password);
-            }
-            catch (KeyNotFoundException)
-            {
-                PanicAndExit($"Unsupported Database system: {AccessConfig.Source.Kind}", ExitCode.UnsupportedDatabase);
-            }
-            catch (Exception e)
-            {
-                PanicAndExit($"{e.Message} to source database", ExitCode.SourceConnectionError);
-            }
-
-
-            // Target database connection
-            try
-            {
-                var cfg = AccessConfig.Target;
-                target = Instace[cfg.Kind];
-                target.Connect(cfg.Host, cfg.Port, cfg.Databasename, cfg.User, cfg.Password);
-            }
-            catch (KeyNotFoundException)
-            {
-                PanicAndExit($"Unsupported Database system: {AccessConfig.Target.Kind}", ExitCode.UnsupportedDatabase);
-            }
-            catch (Exception e)
-            {
-                PanicAndExit($"{e.Message} to target database", ExitCode.TargetConnectionError);
-            }
-
-            Console.WriteLine("Connected to database...\n");
-        }
 
         private static void ReadConfig()
         {
@@ -192,14 +63,153 @@ namespace SwapQL
             {
                 PanicAndExit(e.Message, ExitCode.InvalidConfig);
             }
+
             Console.WriteLine("Configuration read...\n");
         }
+
+        private async static Task Connect2Database()
+        {
+            var errors = new List<string>(2);
+            Console.WriteLine("Connecting to database...");
+
+            var sourceConnect = Task.Run(() =>
+            {
+                var cfg = AccessConfig.Source;
+
+                if (Instace.ContainsKey(cfg.Kind))
+                    source = Instace[cfg.Kind];
+                else
+                    PanicAndExit($"Unsupported Database system: {AccessConfig.Source.Kind}", ExitCode.UnsupportedDatabase);
+
+                try
+                {
+                    source.Connect(cfg.Host, cfg.Port, cfg.Databasename, cfg.User, cfg.Password);
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"SOURCE DATABASE: {e.InnerException.Message}");
+                }
+            });
+
+            var targetConnect = Task.Run(() =>
+            {
+                var cfg = AccessConfig.Target;
+
+                if (Instace.ContainsKey(cfg.Kind))
+                    target = Instace[cfg.Kind];
+                else
+                    PanicAndExit($"Unsupported Database system: {AccessConfig.Target.Kind}", ExitCode.UnsupportedDatabase);
+
+                try
+                {
+                    target.Connect(cfg.Host, cfg.Port, cfg.Databasename, cfg.User, cfg.Password);
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"TARGET DATABASE: {e.InnerException.Message}");
+                }
+            });
+
+            await Task.WhenAll(sourceConnect, targetConnect).ContinueWith(ante =>
+            {
+                if (errors.Any())
+                {
+                    PanicAndExit(string.Join("\n", errors), ExitCode.ConnectionError);
+                }
+            });
+
+            Console.WriteLine("Connected to database...\n");
+        }
+
+        private async static Task CreateDatabaseStructure()
+        {
+            Console.WriteLine("Creating database structure...");
+            await Task.Delay(500);
+
+            var comm = target.Connection.CreateCommand();
+#if DEBUG
+            {
+                comm.CommandText = "drop table IF EXISTS abteilung;";
+                await comm.ExecuteNonQueryAsync();
+                comm.CommandText = "drop table IF EXISTS checks;";
+                await comm.ExecuteNonQueryAsync();
+                comm.CommandText = "drop table IF EXISTS person;";
+                await comm.ExecuteNonQueryAsync();
+                comm.CommandText = "drop table IF EXISTS foreigners;";
+                await comm.ExecuteNonQueryAsync();
+                comm.CommandText = "drop table IF EXISTS Persons;";
+                await comm.ExecuteNonQueryAsync();
+                comm.CommandText = "drop sequence IF EXISTS sequence_Persons_ID;";
+                await comm.ExecuteNonQueryAsync();
+            }
+#endif
+
+            foreach (var item in source.GetDatabaseStructure(target))
+            {
+                comm.CommandText = item;
+                await comm.ExecuteNonQueryAsync();
+            }
+        }
+
+        private async static Task PopulateDatabase()
+        {
+            Console.WriteLine("Inserting data...");
+            await Task.Delay(500);
+
+            foreach (var tableName in source.GetTableNames())
+            {
+                // TODO: reading and inserting should happen in lockstep - read one line,
+                //       insert one line. Needs small refactoring but nothing major.
+
+                string[] insertStatements = source.GetData(tableName);
+
+                target.SetData(insertStatements);
+            }
+        }
+
+        private async static Task AddCostraints()
+        {
+            Console.WriteLine("Integrating constraints...");
+            await Task.Delay(500);
+
+            foreach (var constraints in new[] { source.GetConstraints(), source.GetForeignKeyConstraints() })
+            {
+                var sql = target.SetConstraints(constraints);
+
+                foreach (var item in sql)
+                {
+                    Console.WriteLine(item);
+
+                    var comm = target.Connection.CreateCommand();
+                    comm.CommandText = item;
+                    await comm.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        private async static Task AddAutoIncrement()
+        {
+            Console.WriteLine("Integrating auto_increment...");
+            await Task.Delay(500);
+
+            var columns_with_autoIncrement = source.GetAtrributeAutoIncrement();
+            var sql_statements = target.SetAtrributeAutoIncrement(columns_with_autoIncrement);
+
+            foreach (var sql in sql_statements)
+            {
+                Console.WriteLine(sql);
+
+                var comm = target.Connection.CreateCommand();
+                comm.CommandText = sql;
+                await comm.ExecuteNonQueryAsync();
+            }
+        }
+
 
         private static void PanicAndExit(string msg, ExitCode exitCode)
         {
             Console.ForegroundColor = exitCode == ExitCode.Success ? ConsoleColor.Green : ConsoleColor.Red;
             Console.Error.WriteLine($"\n{msg}\n{(exitCode == ExitCode.Success ? "" : "Error: ")}{exitCode}:{(int)exitCode}");
-            Console.ResetColor();
             Environment.Exit((int)exitCode);
         }
     }
