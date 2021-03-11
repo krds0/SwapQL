@@ -39,7 +39,7 @@ namespace AddQL
                 }
                 else if (constraint is SwapQLCheckConstraint check_constraint)
                 {
-                    sql_statement.Add($"ALTER TABLE {check_constraint.table} ADD CHECK (char_length(zipcode) = 5);");
+                    sql_statement.Add($"ALTER TABLE {check_constraint.table} ADD CONSTRAINT {check_constraint.table}_{check_constraint.column}_check CHECK {check_constraint.check};");
                 }
                 else if (constraint is SwapQLForeignKeyConstraint foreign_constraint)
                 {

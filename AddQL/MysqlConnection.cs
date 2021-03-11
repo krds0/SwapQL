@@ -7,6 +7,8 @@ using MySql.Data.MySqlClient;
 using SwapQLib;
 using SwapQLib.Config;
 using System.Data;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace AddQL
 {
@@ -17,12 +19,12 @@ namespace AddQL
         public override string[] GetDatabaseStructure(SwapQLConnection tConnection)
         {
             var createStatements = new List<string>();
-            var tables = Connection.GetSchema("Tables", new[] {null, AccessConfig.Source.Databasename });
-            
+            var tables = Connection.GetSchema("Tables", new[] { null, AccessConfig.Source.Databasename });
+
             foreach (DataRow table in tables.Rows)
             {
                 var tableName = table[2] as string;
-                var dt = Connection.GetSchema("Columns", new[] {null, AccessConfig.Source.Databasename, tableName });
+                var dt = Connection.GetSchema("Columns", new[] { null, AccessConfig.Source.Databasename, tableName });
 
                 string statement = $"CREATE TABLE {tableName} ({GetDatabaseStructure(dt, tConnection)});";
                 createStatements.Add(statement);
@@ -30,12 +32,34 @@ namespace AddQL
 
             return createStatements.ToArray();
         }
-        
+
         public override SwapQLConstraint[] GetConstraints()
         {
-            var columns = Connection.GetSchema("Columns", new[] {null, AccessConfig.Source.Databasename });
+            var check_constraints = new List<SwapQLCheckConstraint>();
+            foreach (var table in GetTableNames())
+            {
+                var comm = Connection.CreateCommand();
+                comm.CommandText = $"show create table {table};";
 
-            return GetConstraints(columns);
+                var create_table_sql = string.Empty;
+                var create_table_sql_reader = comm.ExecuteReader();
+
+                if (create_table_sql_reader.Read())
+                {
+                    create_table_sql = create_table_sql_reader.GetString(1);
+
+                    var regex_check_contraints = Regex.Match(create_table_sql, "CHECK \\((.*)\\)");
+                    var column = Regex.Match(regex_check_contraints.Value, "`(.*)`").Groups[1].Value;
+
+                    check_constraints.Add(new SwapQLCheckConstraint(table, column, regex_check_contraints.Groups[1].Value.Replace('`', ' ')));
+                }
+
+                create_table_sql_reader.Close();
+            }
+
+            var columns = Connection.GetSchema("Columns", new[] { null, AccessConfig.Source.Databasename });
+
+            return check_constraints.Concat(GetConstraints(columns)).ToArray();
         }
         public override SwapQLConstraint[] GetForeignKeyConstraints()
         {
@@ -53,7 +77,7 @@ namespace AddQL
 
         public override string[] GetTableNames()
         {
-            var tables = Connection.GetSchema("Tables", new[] {null, Connection.Database });
+            var tables = Connection.GetSchema("Tables", new[] { null, Connection.Database });
 
             return GetTableNames(tables);
         }
