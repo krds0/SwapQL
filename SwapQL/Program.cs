@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using AddQL;
-
 using SwapQLib;
 using SwapQLib.Config;
 

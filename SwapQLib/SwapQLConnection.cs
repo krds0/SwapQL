@@ -139,14 +139,14 @@ namespace SwapQLib
             {
                 var column = columns.Rows[i];
                 columnName = column.Field<string>("column_name");
-                columnType = tConnection.GetTDataTypeName(column.Field<string>("data_type"));
+                columnType = tConnection.GetTDataTypeName(column.Field<string>("column_type"));
 
                 columnDefinition += $"{columnName} {columnType}, ";
 
             }
 
             columnName = columns.Rows[columns.Rows.Count - 1].Field<string>("column_name");
-            columnType = tConnection.GetTDataTypeName(columns.Rows[columns.Rows.Count - 1].Field<string>("data_type"));
+            columnType = tConnection.GetTDataTypeName(columns.Rows[columns.Rows.Count - 1].Field<string>("column_type"));
 
             columnDefinition += $"{columnName} {columnType}";
 

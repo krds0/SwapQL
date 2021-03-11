@@ -12,6 +12,7 @@ using System.Globalization;
 using Npgsql;
 
 using SwapQLib;
+using System.Text.RegularExpressions;
 
 namespace AddQL
 {
@@ -65,6 +66,8 @@ namespace AddQL
 
         protected override string GetTDataTypeName(string sTypeName) //Find Postgresql Name of Datatype for Create Statements
         {
+            Regex varchar = new Regex(@"(CHARACTER VARYING)|(N?(VAR)|(N)CHAR).+");
+            Regex character = new Regex(@"CHAR(ACTOR)?.+");
             sTypeName = sTypeName.ToUpper();
             switch (sTypeName)
             {
@@ -74,12 +77,12 @@ namespace AddQL
                 case "INTERVAL": return sTypeName;
                 case "TIME": return sTypeName;
                 case "YEAR": return sTypeName;
-                case "CHARACTER": return AddSize(sTypeName);
+                /*case "CHARACTER": return AddSize(sTypeName);
                 case "CHAR": return AddSize(sTypeName);
                 case "NCHAR":   //fall through: regular varchar stores utf8
                 case "NVARCHAR":
                 case "VARCHAR": return AddSize("VARCHAR");
-                case "CHARACTER VARYING": return AddSize(sTypeName);
+                case "CHARACTER VARYING": return AddSize(sTypeName);*/
                 case "TINYTEXT":    // fall through: Only Text type
                 case "MEDIUMTEXT": 
                 case "LONGTEXT":    
@@ -92,6 +95,7 @@ namespace AddQL
                 case "INT2": return sTypeName;
                 case "INT4": return sTypeName;
                 case "INT8": return sTypeName;
+                case "INT(11)": return "INT";
                 case "TINYINT":     // fall through: Only SMALLINT, INT & BIGINT 
                 case "TINY INT":
                 case "SMALLINT": return "SMALLINT";
@@ -99,7 +103,21 @@ namespace AddQL
                 case "INT": return "INT"; //PostgreSQL supports SmallINT, INT, and BIGINT
                 case "BIGINT": return sTypeName;
                 default:
-                    throw new ArgumentException("Unsupported column type found: " + sTypeName);
+                    if (varchar.IsMatch(sTypeName))
+                    {
+                        string size = Regex.Match(sTypeName, @"\d+").Value;
+                        return $"VARCHAR({size})";
+                    }
+                    else if (character.IsMatch(sTypeName))
+                    {
+                        string size = Regex.Match(sTypeName, @"\d+").Value;
+                        return $"CHAR({size})";
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Unsupported column type found: " + sTypeName);
+                    }
+                    
             }
         }
 
