@@ -68,6 +68,7 @@ namespace AddQL
         {
             Regex varchar = new Regex(@"(CHARACTER VARYING)|(N?(VAR)|(N)CHAR).+");
             Regex character = new Regex(@"CHAR(ACTOR)?.+");
+            Regex integer = new Regex(@"INT\(?.+");
             sTypeName = sTypeName.ToUpper();
             switch (sTypeName)
             {
@@ -95,7 +96,6 @@ namespace AddQL
                 case "INT2": return sTypeName;
                 case "INT4": return sTypeName;
                 case "INT8": return sTypeName;
-                case "INT(11)": return "INT";
                 case "TINYINT":     // fall through: Only SMALLINT, INT & BIGINT 
                 case "TINY INT":
                 case "SMALLINT": return "SMALLINT";
@@ -103,14 +103,17 @@ namespace AddQL
                 case "INT": return "INT"; //PostgreSQL supports SmallINT, INT, and BIGINT
                 case "BIGINT": return sTypeName;
                 default:
-                    if (varchar.IsMatch(sTypeName))
+                    string size = Regex.Match(sTypeName, @"\d+").Value;
+                    if (integer.IsMatch(sTypeName))
                     {
-                        string size = Regex.Match(sTypeName, @"\d+").Value;
+                        return $"INT({size})";
+                    }
+                    if (varchar.IsMatch(sTypeName))
+                    {                     
                         return $"VARCHAR({size})";
                     }
                     else if (character.IsMatch(sTypeName))
                     {
-                        string size = Regex.Match(sTypeName, @"\d+").Value;
                         return $"CHAR({size})";
                     }
                     else
