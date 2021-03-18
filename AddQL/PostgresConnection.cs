@@ -22,13 +22,30 @@ namespace AddQL
 
         public override string[] SetConstraints(SwapQLConstraint[] constraints)
         {
+            var index_to_delete = new List<int>();
+            var table_has_primary_key = new Dictionary<string, int>();
             var sql_statement = new List<string>();
 
-            foreach (var constraint in constraints)
+            for (var i = 0; i < constraints.Length; i++)
             {
+                var constraint = constraints[i];
+
                 if (constraint is SwapQLPrimaryKeyConstraint primary_key_constraint)
                 {
-                    sql_statement.Add($"ALTER TABLE {constraint.table} ADD PRIMARY KEY ({constraint.column})");
+                    if (!table_has_primary_key.ContainsKey(primary_key_constraint.table))
+                    {
+                        table_has_primary_key.Add(primary_key_constraint.table, i);
+                        sql_statement.Add($"ALTER TABLE {constraint.table} ADD PRIMARY KEY ({constraint.column})");
+                    }
+                    else
+                    {
+                        var primary_key_alter = sql_statement[table_has_primary_key[constraint.table]];
+                        var primary_key_columns = Regex.Match(primary_key_alter, @"\((.*)\)").Groups[1];
+
+                        sql_statement.Add($"ALTER TABLE {constraint.table} ADD PRIMARY KEY ({primary_key_columns},{constraint.column})");
+                        index_to_delete.Add(table_has_primary_key[constraint.table]);
+                        table_has_primary_key[constraint.table] = sql_statement.Count - 1;
+                    }
                 }
                 else if (constraint is SwapQLUniqueConstraint unique_constraint)
                 {
@@ -47,6 +64,9 @@ namespace AddQL
                     sql_statement.Add($"ALTER TABLE {foreign_constraint.targetTable} ADD CONSTRAINT {foreign_constraint.constraintName} FOREIGN KEY ({foreign_constraint.targetColumn}) REFERENCES {foreign_constraint.sourceTable} ({foreign_constraint.sourceColumn});");
                 }
             }
+
+            for (int i = index_to_delete.Count - 1; i >= 0 ; i--)
+                sql_statement.RemoveAt(index_to_delete[i]);
 
             return sql_statement.ToArray();
         }
