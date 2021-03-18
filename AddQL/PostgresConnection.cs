@@ -69,6 +69,7 @@ namespace AddQL
             Regex varchar = new Regex(@"(CHARACTER VARYING)|(N?(VAR)|(N)CHAR).+");
             Regex character = new Regex(@"CHAR(ACTOR)?.+");
             Regex integer = new Regex(@"INT\(?.+");
+            Regex dec = new Regex(@"DECIMAL\(?.+");
             sTypeName = sTypeName.ToUpper();
             switch (sTypeName)
             {
@@ -115,6 +116,10 @@ namespace AddQL
                     else if (character.IsMatch(sTypeName))
                     {
                         return $"CHAR({size})";
+                    }
+                    else if (dec.IsMatch(sTypeName))
+                    {
+                        return $"DECIMAL({size})";
                     }
                     else
                     {
