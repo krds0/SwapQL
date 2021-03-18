@@ -314,43 +314,50 @@ namespace SwapQLib
             // TODO: figure out how to read unsigned variants of SMALLINT, MEDIUMINT, INT, BIGINT
             //
             //TODO: DATE doesnt work with inserts yet!
-
-            switch (typeName)
+            if (!reader.IsDBNull(colIndex))
             {
-                case "BIT": return reader.GetFieldValue<UInt64>(colIndex).ToString();
-                case "DATE": return Quote(reader.GetString(colIndex)); ;
-                case "DATETIME": return Quote(reader.GetString(colIndex)); ;
-                case "TIMESTAMP": return reader.GetDateTime(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "CHAR":        // fall through
-                case "NCHAR":       // fall through
-                case "VARCHAR":     // fall through
-                case "NVARCHAR":    // fall through
-                case "TINYTEXT":    // fall through
-                case "TEXT":        // fall through
-                case "MEDIUMTEXT":  // fall through
-                case "LONGTEXT": return Quote(reader.GetString(colIndex));
-                case "DOUBLE": return reader.GetDouble(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "FLOAT": return reader.GetFloat(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "TINYINT": return reader.GetInt16(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "SMALLINT": return reader.GetInt16(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "INT": return reader.GetInt32(colIndex).ToString(CultureInfo.InvariantCulture);
-                // TODO: does YEAR handling work?
-                case "YEAR": return reader.GetInt32(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "MEDIUMINT": return reader.GetInt32(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "BIGINT": return reader.GetInt64(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "DECIMAL": return reader.GetDecimal(colIndex).ToString(CultureInfo.InvariantCulture);
-                case "TINY INT": return reader.GetByte(colIndex).ToString();
-                default:
-                    // case "BLOB":
-                    //case "TINYBLOB":
-                    //case "MEDIUMBLOB":
-                    //case "LONGBLOB":
-                    //case "BINARY":
-                    //case "VARBINARY":
-                    //case "TIME":
-                    //case "SET":
-                    //case "ENUM":
-                    throw new ArgumentException("Unsupported column type found: " + typeName);
+
+                switch (typeName)
+                {
+                    case "BIT": return reader.GetFieldValue<UInt64>(colIndex).ToString();
+                    case "DATE": return Quote(reader.GetString(colIndex)); ;
+                    case "DATETIME": return Quote(reader.GetString(colIndex)); ;
+                    case "TIMESTAMP": return reader.GetDateTime(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "CHAR":        // fall through
+                    case "NCHAR":       // fall through
+                    case "VARCHAR":     // fall through
+                    case "NVARCHAR":    // fall through
+                    case "TINYTEXT":    // fall through
+                    case "TEXT":        // fall through
+                    case "MEDIUMTEXT":  // fall through
+                    case "LONGTEXT": return Quote(reader.GetString(colIndex));
+                    case "DOUBLE": return reader.GetDouble(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "FLOAT": return reader.GetFloat(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "TINYINT": return reader.GetInt16(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "SMALLINT": return reader.GetInt16(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "INT": return reader.GetInt32(colIndex).ToString(CultureInfo.InvariantCulture);
+                    // TODO: does YEAR handling work?
+                    case "YEAR": return reader.GetInt32(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "MEDIUMINT": return reader.GetInt32(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "BIGINT": return reader.GetInt64(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "DECIMAL": return reader.GetDecimal(colIndex).ToString(CultureInfo.InvariantCulture);
+                    case "TINY INT": return reader.GetByte(colIndex).ToString();
+                    default:
+                        // case "BLOB":
+                        //case "TINYBLOB":
+                        //case "MEDIUMBLOB":
+                        //case "LONGBLOB":
+                        //case "BINARY":
+                        //case "VARBINARY":
+                        //case "TIME":
+                        //case "SET":
+                        //case "ENUM":
+                        throw new ArgumentException("Unsupported column type found: " + typeName);
+                }
+            }
+            else
+            {
+                return "null";
             }
         }
 

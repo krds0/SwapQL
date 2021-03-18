@@ -66,10 +66,11 @@ namespace AddQL
 
         protected override string GetTDataTypeName(string sTypeName) //Find Postgresql Name of Datatype for Create Statements
         {
-            Regex varchar = new Regex(@"(CHARACTER VARYING)|(N?(VAR)|(N)CHAR).+");
+            Regex varchar = new Regex(@"(CHARACTER VARYING)|((N?VAR)|NCHAR).+");
             Regex character = new Regex(@"CHAR(ACTOR)?.+");
             Regex integer = new Regex(@"INT.+");
             Regex dec = new Regex(@"DECIMAL.+");
+
             sTypeName = sTypeName.ToUpper();
             switch (sTypeName)
             {
@@ -94,6 +95,7 @@ namespace AddQL
                 case "REAL": return sTypeName;
                 case "DECIMAL": return sTypeName;
                 case "NUMERIC": return sTypeName;
+                case "UNSIGNED INT": return "BIGINT";
                 case "INT2": return sTypeName;
                 case "INT4": return sTypeName;
                 case "INT8": return sTypeName;
@@ -123,16 +125,18 @@ namespace AddQL
                     }
                     else
                     {
-                        throw new ArgumentException("Unsupported column type found: " + sTypeName);
+                        try
+                        {
+                            throw new ArgumentException("Unsupported column type found: " + sTypeName);
+                        }
+                        catch (Exception e)
+                        {
+                            return "INT";
+                        }
+                        
                     }
                     
             }
-        }
-
-        protected string AddSize(string typename)
-        {
-            //TODO: ADD ACTUAL SIZE
-            return $"{typename}(20)";
         }
     }
 
