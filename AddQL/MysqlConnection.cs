@@ -51,7 +51,8 @@ namespace AddQL
                     var regex_check_contraints = Regex.Match(create_table_sql, "CHECK \\((.*)\\)");
                     var column = Regex.Match(regex_check_contraints.Value, "`(.*)`").Groups[1].Value;
 
-                    check_constraints.Add(new SwapQLCheckConstraint(table, column, regex_check_contraints.Groups[1].Value.Replace('`', ' ')));
+                    if (column != "")
+                        check_constraints.Add(new SwapQLCheckConstraint(table, column, regex_check_contraints.Groups[1].Value.Replace('`', ' ')));
                 }
 
                 create_table_sql_reader.Close();
